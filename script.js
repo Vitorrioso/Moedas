@@ -10,19 +10,19 @@ window.addEventListener('load', function() {
         converterMoeda(moedaOrigem, valor);
     });
 
-    function converterMoeda(moedaOrigem, valor, moedaPara) {
+    function converterMoeda(moedaOrigem, valor) {
         var request = new XMLHttpRequest();
-        request.open('GET', 'https://economia.awesomeapi.com.br/json/all', true);
+        request.open('GET', `https://economia.awesomeapi.com.br/json/last/${moedaOrigem}`, true);
 
         request.onload = function() {
             if (request.status >= 200 && request.status < 400) {
                 var data = JSON.parse(request.responseText);
-
-                if (data.hasOwnProperty(moedaOrigem, moedaPara)) {
-                    var taxaOrigem = parseFloat(data[moedaOrigem].bid);
+                if (data) {
+                  moedaOrigem = moedaOrigem.split('-');
+                  console.log(moedaOrigem);
+                    var taxaOrigem = parseFloat(data[moedaOrigem[0] + moedaOrigem[1]].bid);
                     var valorConvertido = (valor * taxaOrigem);
-                    resultadoDiv.innerHTML = valor + ' ' + moedaOrigem + ' = ' + valorConvertido.toFixed(2) + ' ' + moedaPara ;
-//                    resultadoDiv.innerHTML = valor + ' ' + moedaOrigem + ' = ' + valorConvertido.toFixed(2);
+                    resultadoDiv.innerHTML = valor + ' ' + moedaOrigem[0] + ' = ' + valorConvertido.toFixed(2) + ' ' + moedaOrigem[1] ;
                 } else {
                     resultadoDiv.innerHTML = 'Moeda não encontrada';
                 }
@@ -43,14 +43,14 @@ window.addEventListener('load', function() {
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
                 var moeda = data[key];
-                htmlOptions += '<option value="' + moeda.code + '">' + moeda.name + ' (' + moeda.code + ') '+ ' / ' +' (' + moeda.codein + ')</option>';
+                htmlOptions += '<option value="' + moeda.code + '-' + moeda.codein + '">' + moeda.name + ' (' + moeda.code + ') '+ ' / ' +' (' + moeda.codein + ')</option>';
             }
         }
         selectMoedaOrigem.innerHTML = htmlOptions;
     }
 
     var requestMoedas = new XMLHttpRequest();
-    requestMoedas.open('GET', 'https://economia.awesomeapi.com.br/json/all', true);
+    requestMoedas.open('GET', 'https://economia.awesomeapi.com.br/json/last/BTC-BRL,BTC-USD,BRL-USD', true);
 
     requestMoedas.onload = function() {
         if (requestMoedas.status >= 200 && requestMoedas.status < 400) {
